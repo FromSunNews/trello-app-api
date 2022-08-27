@@ -4,8 +4,6 @@ import { env } from '*/config/environment'
 //4mbYHcrZ4zU5oCAD
 let dbInstance = null
 
-
-
 export const connectDB = async () => {
   const client = new MongoClient(env.MONGODB_URI, {
     useUnifiedTopology: true,
