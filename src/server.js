@@ -3,15 +3,24 @@ import express from 'express'
 import { connectDB } from '*/config/mongodb'
 import { env } from '*/config/environment'
 
+connectDB()
+    .then(() => console.log('Connected sussessfully to database server'))
+    .then(() => bootServer())
+    .catch(error => {
+        console.log(error)
+        process.exit(1)
+    })
 
-const app = express()
+const bootServer = () => {
+    const app = express()
+    app.get('/test', async (req, res) => {
 
-connectDB().catch(console.log)
-app.get('/', (req, res) => {
-    res.end('<h1>Hello worldasdas!</h1><hr/>')
-})
 
-app.listen(env.PORT, env.HOST_NAME, () => {
-    // eslint-disable-next-line no-console
-    console.log(`Listening on ${env.HOST_NAME}:${env.PORT}`)
-})
+        res.end('<h1>Hello worldasdas!</h1><hr/>')
+    })
+
+    app.listen(env.APP_PORT, env.APP_HOST, () => {
+        // eslint-disable-next-line no-console
+        console.log(`Listening on ${env.APP_HOST}:${env.APP_PORT}`)
+    })
+}
