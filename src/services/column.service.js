@@ -1,9 +1,16 @@
 import { ColumnModel } from '*/models/column.model'
+import { BoardModel } from '*/models/board.model'
 
 const createNew = async (data) => {
   try {
-    const result = await ColumnModel.createNew(data)
-    return result
+    //transaction mongodb
+    const newColumn = await ColumnModel.createNew(data)
+    //Update conlumnOrder in board collection
+    console.log(typeof newColumn.boardId)
+    console.log(typeof newColumn.boardId.toString())
+    await BoardModel.pushColumnModel(newColumn.boardId.toString(), newColumn._id.toString())
+
+    return newColumn
   } catch (error) {
     throw new Error(error)
   }
