@@ -1,9 +1,10 @@
 import express from 'express'
+import cors from 'cors'
 //khai báo đầy đủ .js
 import { connectDB } from '*/config/mongodb'
 import { env } from '*/config/environment'
 import { apiV1 } from '*/routes/v1'
-
+import { corsOptions } from '*/config/cors'
 connectDB()
     .then(() => console.log('Connected sussessfully to database server'))
     .then(() => bootServer())
@@ -14,6 +15,8 @@ connectDB()
 
 const bootServer = () => {
     const app = express()
+
+    app.use(cors(corsOptions))
     // Enable req.body data
     app.use(express.json())
     //Use Apis v1
