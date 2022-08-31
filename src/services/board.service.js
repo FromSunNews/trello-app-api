@@ -1,5 +1,5 @@
 import { BoardModel } from '*/models/board.model'
-
+import { cloneDeep } from 'lodash'
 const createNew = async (data) => {
   try {
     const result = await BoardModel.createNew(data)
@@ -15,19 +15,21 @@ const getFullBoard = async (boardId) => {
     if (!board || !board.columns) {
       throw new Error('Board not found')
     }
-
+    const tranformBoard = cloneDeep(board)
+    //filter destroy columns
+    tranformBoard.columns = tranformBoard.columns.filter(column => !column._destroy)
     //add card to each column
-    board.columns.forEach(column => {
-      column.cards = board.cards.filter(cards => cards.columnId.toString() === column._id.toString())
+    tranformBoard.columns.forEach(column => {
+      column.cards = tranformBoard.cards.filter(cards => cards.columnId.toString() === column._id.toString())
     })
 
     //Sort columns by colomnOrder, sort cards by cardOrder
     // this step will pass to frontend Dev :))) Ok ?
 
     // delete cards from board
-    delete board.cards
-    console.log(board)
-    return board
+    delete tranformBoard.cards
+
+    return tranformBoard
   } catch (error) {
     throw new Error(error)
   }
