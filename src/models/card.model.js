@@ -45,8 +45,28 @@ const deleteMany = async (ids) => {
     throw new Error(error)
   }
 }
+
+const update = async (id, data) => {
+  try {
+    const updateData = { ...data }
+    if (updateData.boardId) updateData.boardId = ObjectID(data.boardId)
+    if (updateData.columnId) updateData.columnId = ObjectID(data.columnId)
+
+    const result = await getDB().collection(cardCollectionName).findOneAndUpdate(
+      { _id: ObjectID(id) },
+      { $set: updateData },
+      { returnOriginal: false }
+    )
+    console.log(result)
+    return result.value
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export const CardModel = {
   createNew,
   cardCollectionName,
-  deleteMany
+  deleteMany,
+  update
 }
