@@ -2,6 +2,9 @@
   "name": "trello-app-api",
   "version": "1.0.0",
   "description": "APIs for trello-app",
+  "engines": {
+    "node": "16.17.0"
+  },
   "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
