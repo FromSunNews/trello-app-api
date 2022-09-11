@@ -22,8 +22,14 @@ const bootServer = () => {
     //Use Apis v1
     app.use('/v1', apiV1)
 
-    app.listen(env.APP_PORT, env.APP_HOST, () => {
+    // app.listen(env.APP_PORT, env.APP_HOST, () => {
+    //     // eslint-disable-next-line no-console
+    //     console.log(`Listening on ${env.APP_HOST}:${env.APP_PORT}`)
+    // })
+
+    //Suport heroku deployment
+    app.listen(env.APP_PORT || process.env.PORT, () => {
         // eslint-disable-next-line no-console
-        console.log(`Listening on ${env.APP_HOST}:${env.APP_PORT}`)
+        console.log(`Listening on at port :${process.env.PORT}/`)
     })
 }
