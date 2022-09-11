@@ -3,16 +3,14 @@
   "version": "1.0.0",
   "description": "APIs for trello-app",
   "engines": {
-    "node": "16.17.0",
+    "node": "16.4.0",
     "npm": "8.15.0"
   },
   "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "eslint": "eslint src",
-    "remove-build": "rmdir /s /q build",
-    "create-build": "mkdir build",
-    "clean": "npm run remove-build && npm run create-build",
+    "clean": "rimraf ./build && mkdirp ./build",
     "build-babel": "babel ./src -d ./build/src",
     "build": "npm run clean && npm run build-babel",
     "production": "npm run build && node ./build/src/server.js",
