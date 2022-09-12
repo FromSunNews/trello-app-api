@@ -7,5 +7,5 @@ export const HttpStatusCode = {
 }
 
 export const WHITELIST_DOMAINS = [
-  'https://trello-app-ab61c.web.app/'
+  'https://trello-app-ab61c.web.app'
 ]
