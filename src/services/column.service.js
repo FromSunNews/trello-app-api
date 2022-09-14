@@ -1,18 +1,17 @@
 import { ColumnModel } from '*/models/column.model'
 import { BoardModel } from '*/models/board.model'
 import { CardModel } from '*/models/card.model'
-import { ObjectID } from 'mongodb'
 const createNew = async (data) => {
   try {
     //transaction mongodb
-    const newColumn = await ColumnModel.createNew(data)
-    newColumn.cards = []
-    //Update conlumnOrder in board collection
-    console.log(typeof newColumn.boardId)
-    console.log(typeof newColumn.boardId.toString())
-    await BoardModel.pushColumnModel(newColumn.boardId.toString(), newColumn._id.toString())
+    const createdColumn = await ColumnModel.createNew(data)
+    const getNewColumn = await ColumnModel.findOneById(createdColumn.insertedId.toString())
 
-    return newColumn
+    getNewColumn.cards = []
+    //Update conlumnOrder in board collection
+    await BoardModel.pushColumnModel(getNewColumn.boardId.toString(), getNewColumn._id.toString())
+
+    return getNewColumn
   } catch (error) {
     throw new Error(error)
   }
