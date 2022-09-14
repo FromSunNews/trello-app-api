@@ -1,6 +1,6 @@
 import Joi from 'joi'
 import { getDB } from '*/config/mongodb'
-import { ObjectID } from 'mongodb'
+import { ObjectId } from 'mongodb'
 import { ColumnModel } from './column.model'
 import { CardModel } from './card.model'
 //Define board collection
@@ -15,11 +15,21 @@ const boardCollectionSchema = Joi.object({
 const validateSchema = async (data) => {
   return await boardCollectionSchema.validateAsync(data, { abortEarly: false })
 }
+
+const findOneById = async (id) => {
+  try {
+    const result = await getDB().collection(boardCollectionName).findOne({ _id: ObjectId(id) })
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 const createNew = async (data) => {
   try {
     const value = await validateSchema(data)
     const result = await getDB().collection(boardCollectionName).insertOne(value)
-    return result.ops[0]
+    return result
   } catch (error) {
     throw new Error(error)
   }
@@ -32,7 +42,7 @@ const createNew = async (data) => {
 const pushColumnModel = async (boardId, comlumnId) => {
   try {
     const result = await getDB().collection(boardCollectionName).findOneAndUpdate(
-      { _id: ObjectID(boardId) },
+      { _id: ObjectId(boardId) },
       { $push: { columnOrder: comlumnId } },
       { returnOriginal: false }
     )
@@ -46,7 +56,7 @@ const getFullBoard = async (boardId) => {
     const result = await getDB().collection(boardCollectionName).aggregate([
       {
         $match: {
-          _id: ObjectID(boardId),
+          _id: ObjectId(boardId),
           _destroy: false
         }
       },
@@ -81,9 +91,9 @@ const update = async (id, data) => {
     const updateData = { ...data }
 
     const result = await getDB().collection(boardCollectionName).findOneAndUpdate(
-      { _id: ObjectID(id) },
+      { _id: ObjectId(id) },
       { $set: updateData },
-      { returnOriginal: false }
+      { returnDocument: 'after' }
     )
     console.log(result)
     return result.value
@@ -95,5 +105,6 @@ export const BoardModel = {
   createNew,
   getFullBoard,
   pushColumnModel,
-  update
+  update,
+  findOneById
 }

@@ -3,10 +3,13 @@ import { ColumnModel } from '../models/column.model'
 
 const createNew = async (data) => {
   try {
-    const newCard = await CardModel.createNew(data)
+    const createdCard = await CardModel.createNew(data)
+    const getNewCard = await CardModel.findOneById(createdCard.insertedId.toString())
+
     //Update cardOrder in column
-    await ColumnModel.pushCardOrder(newCard.columnId.toString(), newCard._id.toString())
-    return newCard
+    await ColumnModel.pushCardOrder(getNewCard.columnId.toString(), getNewCard._id.toString())
+
+    return getNewCard
   } catch (error) {
     throw new Error(error)
   }

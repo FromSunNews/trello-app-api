@@ -1,30 +1,41 @@
 import Joi from 'joi'
-import { ObjectID } from 'mongodb'
+import { ObjectId } from 'mongodb'
 import { getDB } from '*/config/mongodb'
 //Define board collection
 const columnCollectionName = 'columns'
 const columnCollectionSchema = Joi.object({
   boardId: Joi.string().required(),
-  title: Joi.string().required().min(3).max(20).trim(), // also ObjectID when create new
+  title: Joi.string().required().min(3).max(20).trim(), // also ObjectId when create new
   cardOrder: Joi.array().items(Joi.string()).default([]),
   createAt: Joi.date().timestamp().default(Date.now()),
   updateAt: Joi.date().timestamp().default(null),
   _destroy: Joi.boolean().default(false)
 })
+
 const validateSchema = async (data) => {
   return await columnCollectionSchema.validateAsync(data, { abortEarly: false })
 }
+
+const findOneById = async (id) => {
+  try {
+    const result = await getDB().collection(columnCollectionName).findOne({ _id: ObjectId(id) })
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 const createNew = async (data) => {
   try {
 
     const validatedValue = await validateSchema(data)
     const insertValue = {
       ...validatedValue,
-      boardId: ObjectID(validatedValue.boardId)
+      boardId: ObjectId(validatedValue.boardId)
     }
     const result = await getDB().collection(columnCollectionName).insertOne(insertValue)
 
-    return result.ops[0]
+    return result
   } catch (error) {
     throw new Error(error)
   }
@@ -37,7 +48,7 @@ const createNew = async (data) => {
 const pushCardOrder = async (columnId, cardId) => {
   try {
     const result = await getDB().collection(columnCollectionName).findOneAndUpdate(
-      { _id: ObjectID(columnId) },
+      { _id: ObjectId(columnId) },
       { $push: { cardOrder: cardId } },
       { returnOriginal: false }
     )
@@ -50,11 +61,11 @@ const pushCardOrder = async (columnId, cardId) => {
 const update = async (id, data) => {
   try {
     const updateData = { ...data }
-    if (updateData.boardId) updateData.boardId = ObjectID(data.boardId)
+    if (updateData.boardId) updateData.boardId = ObjectId(data.boardId)
     const result = await getDB().collection(columnCollectionName).findOneAndUpdate(
-      { _id: ObjectID(id) },
+      { _id: ObjectId(id) },
       { $set: updateData },
-      { returnOriginal: false }
+      { returnDocument: 'after' }
     )
     console.log(result)
     return result.value
@@ -66,5 +77,6 @@ export const ColumnModel = {
   createNew,
   update,
   pushCardOrder,
-  columnCollectionName
+  columnCollectionName,
+  findOneById
 }
